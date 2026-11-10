@@ -9,15 +9,4 @@ htmlcov
 data/
 notebooks/
 test/
-.git
-.venv
-__pycache__
-*.pyc
-data/
-notebooks/
-test.py
-ping.py
-applicant.py
-train.py
-test_model.py
 README.md

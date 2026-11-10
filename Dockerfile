@@ -1,19 +1,24 @@
-
 FROM python:3.11-slim
 
+# Install OpenMP runtime for XGBoost
 RUN apt-get update && apt-get install -y --no-install-recommends libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip install pipenv
+# Install Pipenv
+RUN pip install --no-cache-dir pipenv
 
 WORKDIR /app
 
-COPY ["Pipfile", "Pipfile.lock", "./"]
+# Copy dependency files
+COPY Pipfile Pipfile.lock ./
 
+# Install dependencies
 RUN pipenv install --system --deploy
 
-COPY ["predict.py", "electric_car_model.joblib", "./"]
+# Copy application and model files
+COPY app/ ./app/
+COPY models/ ./models/
 
-EXPOSE 9696
+EXPOSE 8000
 
-ENTRYPOINT ["gunicorn", "--bind=0.0.0.0:9696", "predict:app"]
+ENTRYPOINT ["gunicorn", "--bind=0.0.0.0:8000", "app.predict:app"]

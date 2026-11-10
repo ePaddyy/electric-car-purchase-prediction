@@ -1,5 +1,5 @@
 customer = {
-    "age": 28,
+    "age": 120,
     "annual_income_usd": 190400.0,
     "daily_commute_km": 20.6,
     "number_of_cars_owned": 2,
@@ -10,6 +10,6 @@ customer = {
     "city_type": "Urban",
     "current_car_type": "SUV",
     "home_charging_possible": "No",
-    "subsidy_available": "No",
+    "subsidy_available": "band",
     "range_anxiety_level": "Low",
  }
