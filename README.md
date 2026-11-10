@@ -1,54 +1,37 @@
 # Electric Car Purchase Prediction
 
-A machine learning project that predicts whether a customer is likely to purchase an electric vehicle based on demographic, financial, commuting, and charging-infrastructure characteristics.
+A machine learning project that predicts whether a customer is likely to purchase an electric vehicle (EV) based on demographic, financial, lifestyle, and charging-infrastructure features.
 
-This project covers the end-to-end machine learning workflow, from exploratory data analysis and model experimentation to model serialization, Flask API development, input validation, testing, and Docker containerization.
+The project covers the end-to-end machine learning workflow, from exploratory data analysis and model development to API development, automated testing, Docker containerization, and cloud deployment.
 
-## Table of Contents
+**GitHub Repository:** [electric-car-purchase-prediction](https://github.com/ePaddyy/electric-car-purchase-prediction)
 
-- [Project Overview](#project-overview)
-- [Objectives](#objectives)
-- [Project Structure](#project-structure)
-- [Dataset and Features](#dataset-and-features)
-- [Exploratory Data Analysis](#exploratory-data-analysis)
-- [Model Development](#model-development)
-- [Model Evaluation](#model-evaluation)
-- [Final Model Training and Serialization](#final-model-training-and-serialization)
-- [Flask Prediction API](#flask-prediction-api)
-- [Input Validation](#input-validation)
-- [Testing](#testing)
-- [Dockerization](#dockerization)
-- [Running the Project](#running-the-project)
-- [Making Predictions](#making-predictions)
-- [Deployment](#deployment)
-- [Technologies Used](#technologies-used)
-- [Future Improvements](#future-improvements)
+**Live API:** [Electric Car Purchase Prediction API](https://electric-car-purchase-prediction.onrender.com)
 
-## Project Overview
+**Cloud Platform:** Render
 
-Electric vehicle adoption is influenced by several factors, including income, commuting patterns, charging infrastructure, environmental awareness, and government incentives.
+**Model:** LightGBM Classifier
 
-This project applies machine learning classification techniques to estimate the likelihood of a customer purchasing an electric vehicle based on these characteristics.
+**API Framework:** Flask
 
-Beyond model development, the project demonstrates how a trained machine learning model can be packaged and exposed through a REST API, allowing external applications to request predictions.
+---
 
-## Objectives
+## 1. Project Objectives
 
 The main objectives are to:
 
-1. Explore and understand customer data through exploratory data analysis.
-2. Prepare numerical and categorical features for machine learning.
-3. Experiment with different classification algorithms.
-4. Tune model hyperparameters and compare model performance.
-5. Select an appropriate model and classification threshold.
-6. Train the selected model on the full training dataset.
-7. Serialize the trained model and its configuration.
-8. Develop a Flask API for serving predictions.
-9. Implement input validation and meaningful error responses.
-10. Test the API and containerize the application using Docker.
-11. Prepare the application for cloud deployment.
+- Explore customer characteristics associated with electric vehicle purchases.
+- Perform data cleaning, preprocessing, and exploratory data analysis.
+- Engineer useful features for model development.
+- Train and evaluate multiple classification algorithms.
+- Select and serialize a machine learning model.
+- Build a REST API to serve predictions.
+- Validate incoming customer data.
+- Write automated tests for API functionality.
+- Containerize the application using Docker.
+- Deploy the API to the cloud using Render.
 
-## Project Structure
+## 2. Project Structure
 
 ```text
 electric-car-purchase-prediction/
@@ -57,6 +40,7 @@ electric-car-purchase-prediction/
 │   └── predict.py
 │
 ├── customer/
+│   ├── __init__.py
 │   └── customer.py
 │
 ├── data/
@@ -68,14 +52,17 @@ electric-car-purchase-prediction/
 │   └── electric_car_model.joblib
 │
 ├── notebooks/
+│   ├── catboost_info/
 │   └── electric_car_purchase_predictions.ipynb
 │
 ├── scripts/
 │   └── train.py
 │
 ├── test/
+│   ├── __init__.py
 │   ├── test.py
-│   └── test_api.py
+│   ├── test_api.py
+│   └── test_online.py
 │
 ├── Dockerfile
 ├── Pipfile
@@ -84,95 +71,80 @@ electric-car-purchase-prediction/
 └── README.md
 ```
 
-### Directory Description
+### Directory descriptions
 
 | Directory/File | Purpose |
 |---|---|
-| `data/` | Contains the training, testing, and sample submission datasets. |
-| `notebooks/` | Contains exploratory analysis, model experimentation, evaluation, and model selection. |
-| `scripts/` | Contains the final model training script. |
-| `models/` | Stores the serialized machine learning model artifact. |
-| `app/` | Contains the Flask prediction API. |
-| `customer/` | Contains sample customer information for prediction requests. |
-| `test/` | Contains scripts for testing the API. |
-| `Dockerfile` | Defines the Docker image and application startup configuration. |
-| `Pipfile` | Defines project dependencies. |
-| `Pipfile.lock` | Locks dependency versions for reproducible installation. |
-| `requirements.txt` | Provides a pip-compatible dependency list. |
+| `app/` | Flask prediction API |
+| `customer/` | Sample customer input data |
+| `data/` | Training and testing datasets |
+| `models/` | Serialized machine learning model |
+| `notebooks/` | EDA, experimentation, and model evaluation |
+| `scripts/` | Model training and serialization |
+| `test/` | API and prediction testing |
+| `Dockerfile` | Docker image configuration |
+| `Pipfile` | Python dependency configuration |
+| `Pipfile.lock` | Locked dependency versions |
+| `requirements.txt` | Python package requirements |
 
-## Dataset and Features
+## 3. Dataset and Features
 
-The project uses customer information to predict electric vehicle purchase behaviour.
+The project predicts the target variable:
 
-The target variable is:
+- `will_buy_ev`: Whether a customer will purchase an electric vehicle.
 
-- `will_buy_ev`: Indicates whether a customer purchased an electric vehicle.
-  - `1`: Yes
-  - `0`: No
-
-### Input Features
+The model uses the following features:
 
 | Feature | Description |
 |---|---|
-| `age` | Customer's age. |
-| `annual_income_usd` | Customer's annual income in USD. |
-| `daily_commute_km` | Average daily commuting distance. |
-| `number_of_cars_owned` | Number of cars owned by the customer. |
-| `charging_stations_near_home` | Number of charging stations near the customer's home. |
-| `charging_stations_near_work` | Number of charging stations near the customer's workplace. |
-| `environmental_concern_level` | Customer's environmental concern level. |
-| `gender` | Customer's gender category. |
-| `city_type` | Type of city where the customer lives. |
-| `current_car_type` | Customer's current vehicle category. |
-| `home_charging_possible` | Whether home charging is possible. |
-| `subsidy_available` | Whether a purchase subsidy is available. |
-| `range_anxiety_level` | Customer's level of concern about vehicle range. |
+| age | Customer's age |
+| annual_income_usd | Annual income in USD |
+| daily_commute_km | Daily commuting distance |
+| number_of_cars_owned | Number of cars owned |
+| charging_stations_near_home | Charging stations near home |
+| charging_stations_near_work | Charging stations near work |
+| environmental_concern_level | Environmental concern score |
+| gender | Customer's gender |
+| city_type | Type of city |
+| current_car_type | Current vehicle category |
+| home_charging_possible | Availability of home charging |
+| subsidy_available | Availability of EV subsidies |
+| range_anxiety_level | Customer's range anxiety level |
 
-## Exploratory Data Analysis
+## 4. Exploratory Data Analysis
 
-Exploratory data analysis was conducted in the project notebook to understand the dataset, examine feature distributions, investigate relationships between variables, and identify patterns associated with EV purchases.
+Exploratory data analysis was performed to understand the dataset, examine feature distributions, identify relationships, and investigate the target variable.
 
-The analysis included:
+Key activities included:
 
-- Examining numerical and categorical features.
-- Investigating the target variable distribution.
-- Exploring relationships between customer characteristics and EV purchase behaviour.
-- Evaluating feature associations using mutual information.
-- Identifying potentially influential customer characteristics.
+- Numerical and categorical feature analysis.
+- Target distribution analysis.
+- Missing-value and data-quality checks.
+- Feature relationship analysis.
+- Mutual information analysis.
+- Visualization of important patterns.
 
-Some notable observations from the analysis include:
+The analysis indicated that environmental concern, annual income, and subsidy availability were useful features for understanding EV purchase patterns.
 
-- Environmental concern had the highest mutual information score among numerical features.
-- Annual income was another important numerical feature.
-- Subsidy availability had the highest mutual information score among categorical features.
-- Customers with home charging availability showed a higher observed EV purchase rate.
-- Customers with available subsidies also showed a higher observed purchase rate.
+These relationships are observational and do not establish causation.
 
-These findings describe associations in the dataset and do not establish causal relationships.
+## 5. Model Development
 
-## Model Development
+Multiple classification algorithms were explored and evaluated.
 
-The project follows an experimentation-based approach to model selection.
+Models included:
 
-Multiple classification algorithms were investigated and compared using ROC-AUC as the primary model-selection metric.
+- Logistic Regression
+- Decision Tree
+- Random Forest
+- Extra Trees
+- XGBoost
+- LightGBM
+- CatBoost
 
-### Models Evaluated
+Model comparison was based primarily on ROC-AUC, alongside other classification metrics.
 
-| Model |
-|---|
-| Logistic Regression |
-| Decision Tree |
-| Random Forest |
-| Extra Trees |
-| XGBoost |
-| LightGBM |
-| CatBoost |
-
-Hyperparameter tuning was performed to identify suitable configurations for the candidate models.
-
-### Validation Results
-
-The notebook's model comparison produced the following validation ROC-AUC scores:
+### Model comparison
 
 | Model | Validation ROC-AUC |
 |---|---:|
@@ -184,269 +156,202 @@ The notebook's model comparison produced the following validation ROC-AUC scores
 | Extra Trees | 0.928865 |
 | Decision Tree | 0.912376 |
 
-LightGBM was selected as the final model following the experimentation and threshold-selection process.
+LightGBM was selected for the final model.
 
-Although XGBoost achieved a marginally higher validation ROC-AUC, LightGBM was selected for the final implementation.
+## 6. Final Model Configuration
 
-## Model Evaluation
-
-The notebook uses the supplied test dataset as the final evaluation dataset after model experimentation and selection.
-
-The evaluation process considers:
-
-- ROC-AUC
-- Precision
-- Recall
-- F1 Score
-- Confusion Matrix
-
-The classification threshold is also considered when converting predicted probabilities into purchase classifications.
-
-**Note:** Notebook evaluation results and final training-script results represent different stages of the workflow and should not be interpreted as measurements from the same fitted model on the same dataset.
-
-## Final Model Training and Serialization
-
-After selecting the model configuration, a separate training script was created:
-
-```text
-scripts/train.py
-```
-
-This script trains the selected LightGBM configuration using the full training dataset rather than repeating the notebook's experimental workflow.
-
-### Selected Model
+The selected LightGBM configuration:
 
 | Parameter | Value |
-|---|---|
-| Model | LightGBM Classifier |
-| Model Name | ECPP-LightGBM |
-| Number of Estimators | 200 |
-| Maximum Depth | 3 |
-| Number of Leaves | 15 |
-| Learning Rate | 0.05 |
-| Random State | 42 |
-| Classification Threshold | 0.27 |
+|---|---:|
+| Model | ECPP-LightGBM |
+| n_estimators | 200 |
+| max_depth | 3 |
+| num_leaves | 15 |
+| learning_rate | 0.05 |
+| random_state | 42 |
+| Classification threshold | 0.27 |
 
-### Final Training Script Output
+The model artifact is saved using Joblib:
 
-The training script reported the following results:
+```text
+models/electric_car_model.joblib
+```
 
-| Metric | Value |
+The artifact stores the trained model and prediction configuration used by the API.
+
+### Training script
+
+The `scripts/train.py` script trains the selected model configuration and saves the resulting artifact.
+
+Run it from the project root:
+
+```bash
+python scripts/train.py
+```
+
+The notebook contains the experimentation, model comparison, and final evaluation workflow. The training script is used to train and serialize the selected model configuration. Their reported metrics should be interpreted according to their respective evaluation datasets and procedures.
+
+### Training script's reported evaluation output
+
+| Metric | Result |
 |---|---:|
 | ROC-AUC | 0.9395 |
 | Precision | 0.6003 |
 | Recall | 0.8529 |
 | F1 Score | 0.7046 |
 
-Confusion Matrix:
+These are the metrics reported by the training script, not a claim that they represent the same evaluation as the notebook's final test-set results.
 
-```text
-[[97085 13274]
- [ 3439 19935]]
-```
+## 7. API Development
 
-These figures are recorded as the training script's reported evaluation output, separately from the notebook's final test evaluation.
+A Flask REST API was developed to expose the trained model for external predictions.
 
-### Model Serialization
-
-The trained model and its associated configuration are saved using Joblib.
-
-Artifact location:
-
-```text
-models/electric_car_model.joblib
-```
-
-The saved artifact includes the model and prediction configuration required by the API, including the selected classification threshold.
-
-The training script also verifies that the saved artifact can be loaded successfully.
-
-## Flask Prediction API
-
-The trained model is exposed through a Flask REST API.
-
-The API implementation is located at:
-
-```text
-app/predict.py
-```
-
-Gunicorn is used as the production application server.
+The API loads the serialized model artifact and provides endpoints for checking service availability, retrieving model information, and generating predictions.
 
 ### API Endpoints
 
-| Method | Endpoint | Purpose |
+| Endpoint | Method | Description |
 |---|---|---|
-| GET | `/ping` | Checks API availability. |
-| GET | `/about` | Provides information about the model. |
-| POST | `/predict` | Receives customer information and returns a prediction. |
+| `/ping` | GET | Checks whether the API is running |
+| `/about` | GET | Returns model information |
+| `/predict` | POST | Generates an EV purchase prediction |
 
-### Prediction Workflow
+### Input validation
 
-The prediction endpoint follows this general process:
+The prediction endpoint validates incoming requests before passing data to the model.
 
-1. Receives customer information in JSON format.
-2. Checks the incoming request.
-3. Validates the supplied customer attributes.
-4. Processes valid input using the saved model.
-5. Generates a prediction.
-6. Returns the prediction response as JSON.
+Validation includes:
 
-The API loads the serialized model artifact rather than retraining the model whenever a prediction request is received.
+- Checking that the request uses JSON.
+- Ensuring the request body is a JSON object.
+- Checking for missing required fields.
+- Rejecting unexpected fields.
+- Validating categorical feature values.
+- Validating numerical data types.
+- Checking numerical business rules and permitted ranges.
 
-## Input Validation
+The API returns appropriate HTTP error responses for invalid requests.
 
-The API includes input validation to ensure that incoming customer information meets the expected requirements.
+## 8. Testing
 
-Validation covers:
+The project includes three testing scripts:
 
-- Required customer fields.
-- Numerical and categorical data types.
-- Allowed categorical values.
-- Numerical value constraints.
-- Business rules for customer information.
+| File | Purpose |
+|---|---|
+| `test/test.py` | Sends sample customer data to the API |
+| `test/test_api.py` | Automated API tests using Pytest |
+| `test/test_online.py` | Tests predictions against the deployed Render API |
 
-Invalid requests are rejected before prediction, with error responses intended to help identify the problematic fields.
+Run the automated API tests:
 
-The validation logic is also being refined to collect multiple validation errors in a single response rather than stopping after the first invalid field.
-
-## Testing
-
-The project includes a dedicated testing directory:
-
-```text
-test/
-├── test.py
-└── test_api.py
+```bash
+pytest test/test_api.py
 ```
 
-### Python API Client
-
-`test.py` acts as an external client that sends sample customer information to the running API.
-
-It uses the Python `requests` library to send HTTP requests and inspect the API responses.
-
-Run it from the project root:
+Run the local prediction client:
 
 ```bash
 python -m test.test
 ```
 
-### Automated API Testing
+Run the online prediction client:
 
-`test_api.py` is used for API testing.
+```bash
+python -m test.test_online
+```
 
-The intended test coverage includes:
+The online test successfully sends customer information to the deployed API and receives a prediction response.
 
-- Successful prediction requests.
-- Missing required fields.
-- Invalid numerical values.
-- Invalid categorical values.
-- Multiple validation errors.
-- Appropriate HTTP status codes.
-- Error handling for malformed requests.
+## 9. Docker Containerization
 
-## Dockerization
+Docker was used to package the Flask application and its model dependencies into a portable container.
 
-The application has been containerized using Docker to provide a consistent runtime environment.
+The Dockerfile:
 
-The Dockerfile uses Python 3.11 as its base image.
+- Uses Python 3.11 slim as the base image.
+- Installs the required system dependency `libgomp1`.
+- Installs Python dependencies using Pipenv.
+- Copies the application and serialized model.
+- Starts the application using Gunicorn.
 
-It also installs `libgomp1`, a system dependency required by certain machine learning libraries.
-
-### Docker Configuration
-
-The Dockerfile performs the following operations:
-
-1. Uses a lightweight Python 3.11 image.
-2. Installs required system dependencies.
-3. Installs Pipenv.
-4. Copies the Pipfile and lockfile.
-5. Installs locked Python dependencies.
-6. Copies the Flask application and model artifact.
-7. Exposes port `8000`.
-8. Starts the application using Gunicorn.
-
-### Build the Docker Image
-
-From the project root:
+### Build the Docker image
 
 ```bash
 docker build -t ev-prediction .
 ```
 
-### Run the Container
+### Run the container locally
 
 ```bash
-docker run -it --rm -p 8000:8000 ev-prediction
+docker run --rm -p 8000:10000 ev-prediction
 ```
 
-The API will be accessible locally at:
+The API can then be accessed locally at:
 
 ```text
 http://localhost:8000
 ```
 
-The container starts the Flask application through Gunicorn. There is no need to start a second local Flask server while the Docker container is already running.
+## 10. Cloud Deployment — Render
 
-## Running the Project
+The application has been successfully deployed to **Render** as a Docker-based Web Service.
 
-### 1. Clone the Repository
+Render builds the application from the GitHub repository using the project's Dockerfile and runs the container in the cloud.
 
-```bash
-git clone https://github.com/ePaddyy/electric-car-purchase-prediction.git
+### Deployment configuration
+
+| Setting | Configuration |
+|---|---|
+| Platform | Render |
+| Service Type | Web Service |
+| Runtime | Docker |
+| Repository | ePaddyy/electric-car-purchase-prediction |
+| Branch | main |
+| Dockerfile | `./Dockerfile` |
+| Health Check Path | `/ping` |
+| Application Server | Gunicorn |
+
+### Port configuration
+
+Render provides the application port through the `PORT` environment variable.
+
+The Dockerfile uses:
+
+```dockerfile
+EXPOSE 10000
+
+ENTRYPOINT ["sh", "-c", "exec gunicorn --bind 0.0.0.0:${PORT:-10000} app.predict:app"]
 ```
 
-### 2. Navigate to the Project Directory
+This allows Gunicorn to bind to the port supplied by Render, with `10000` as the default.
 
-```bash
-cd electric-car-purchase-prediction
+### Live API
+
+**Base URL:** https://electric-car-purchase-prediction.onrender.com
+
+Available endpoints:
+
+```text
+GET  https://electric-car-purchase-prediction.onrender.com/ping
+GET  https://electric-car-purchase-prediction.onrender.com/about
+POST https://electric-car-purchase-prediction.onrender.com/predict
 ```
 
-### 3. Install Dependencies
+The deployed `/ping` endpoint has been verified, and the `/predict` endpoint has successfully generated predictions through the online testing client.
 
-Install Pipenv:
+### Making predictions against the deployed API
 
-```bash
-pip install pipenv
-```
+External applications can send customer information to the deployed `/predict` endpoint using an HTTP POST request.
 
-Install the project dependencies:
+Example using Python:
 
-```bash
-pipenv install
-```
+```python
+import requests
 
-### 4. Build the Docker Image
+url = "https://electric-car-purchase-prediction.onrender.com/predict"
 
-```bash
-docker build -t ev-prediction .
-```
-
-### 5. Start the Application
-
-```bash
-docker run -it --rm -p 8000:8000 ev-prediction
-```
-
-### 6. Send a Prediction Request
-
-Open another terminal and run:
-
-```bash
-python -m test.test
-```
-
-The test client will send the sample customer information to the running API.
-
-## Making Predictions
-
-The API accepts customer information through a JSON request.
-
-Example request structure:
-
-```json
-{
+customer = {
     "age": 28,
     "annual_income_usd": 190400.0,
     "daily_commute_km": 20.6,
@@ -461,88 +366,68 @@ Example request structure:
     "subsidy_available": "No",
     "range_anxiety_level": "Low"
 }
+
+response = requests.post(
+    url,
+    json=customer,
+    timeout=60
+)
+
+print(response.status_code)
+print(response.json())
 ```
 
-The request is sent to:
+The request uses JSON, and the API validates the supplied features before generating a prediction.
 
-```http
-POST /predict
-```
+**Note:** The first request after a period of inactivity may take longer on a free hosting instance because the service may need to wake up.
 
-The API validates the customer information and returns a prediction response.
+## 11. Technologies Used
 
-The same endpoint can be consumed by other applications, including web frontends and external services.
-
-## Deployment
-
-The application currently runs locally inside a Docker container.
-
-The next stage is to deploy the containerized application to a cloud hosting platform.
-
-**Planned hosting platform:** Render.
-
-The planned deployment workflow is:
-
-1. Push the latest project changes to GitHub.
-2. Connect the GitHub repository to Render.
-3. Configure a Docker Web Service.
-4. Build and deploy the Docker image.
-5. Test the public API endpoints.
-6. Update the Python client to communicate with the deployed API.
-
-Cloud deployment is still pending.
-
-## Technologies Used
-
-| Technology | Purpose |
+| Category | Technologies |
 |---|---|
-| Python 3.11 | Main programming language |
-| Pandas | Data manipulation and analysis |
-| NumPy | Numerical operations |
-| Scikit-learn | Preprocessing and machine learning utilities |
-| LightGBM | Final classification model |
-| XGBoost | Model experimentation |
-| CatBoost | Model experimentation |
-| Joblib | Model serialization |
-| Flask | REST API development |
-| Gunicorn | Production application server |
-| Requests | HTTP client and API testing |
-| Pytest | Automated testing |
-| Docker | Application containerization |
-| Pipenv | Dependency management |
-| Git and GitHub | Version control and source code hosting |
+| Programming | Python |
+| Data Analysis | Pandas, NumPy |
+| Visualization | Matplotlib, Seaborn |
+| Machine Learning | Scikit-learn, LightGBM, XGBoost, CatBoost |
+| Model Serialization | Joblib |
+| API Development | Flask |
+| API Server | Gunicorn |
+| Testing | Pytest, Requests |
+| Containerization | Docker |
+| Cloud Deployment | Render |
+| Version Control | Git, GitHub |
 
-## Future Improvements
+## 12. Future Improvements
 
-- Complete cloud deployment.
-- Finalize multi-error validation handling.
-- Expand automated API test coverage.
-- Add API documentation.
-- Develop a frontend for submitting customer information.
-- Monitor API performance and prediction behaviour.
-- Document and compare final model evaluation results.
-- Add deployment and usage instructions for external API consumers.
+Potential improvements include:
 
-## Project Status
+- Build a simple frontend for interactive predictions.
+- Add API authentication and request protection.
+- Improve API monitoring and logging.
+- Add model performance monitoring.
+- Implement CI/CD checks.
+- Explore additional model explainability techniques.
+- Improve the prediction interface and documentation.
+
+## 13. Project Status
 
 | Component | Status |
 |---|---|
-| Exploratory data analysis | Completed |
+| Data cleaning and EDA | Completed |
+| Feature engineering | Completed |
 | Model experimentation | Completed |
-| Hyperparameter tuning | Completed |
-| Model selection | Completed |
-| Final model training script | Implemented |
-| Model serialization | Implemented |
-| Flask prediction API | Implemented |
-| Input validation | Implemented; refinements ongoing |
-| Python API client | Working locally |
-| Automated API testing | In progress |
-| Docker image | Built successfully |
-| Local Docker execution | Working |
-| Cloud deployment | Pending |
+| Final model training | Completed |
+| Model serialization | Completed |
+| Flask API development | Completed |
+| Input validation | Implemented |
+| Automated API testing | Tested |
+| Docker containerization | Completed |
+| Render cloud deployment | Deployed |
+| `/ping` health check | Verified |
+| `/predict` cloud endpoint | Verified |
 
 ---
 
 **Author:** Emmanuel Paddy Adams
 
-**Repository:** [electric-car-purchase-prediction](https://github.com/ePaddyy/electric-car-purchase-prediction)
+**GitHub:** [ePaddyy](https://github.com/ePaddyy)
