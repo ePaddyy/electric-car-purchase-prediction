@@ -19,6 +19,6 @@ RUN pipenv install --system --deploy
 COPY app/ ./app/
 COPY models/ ./models/
 
-EXPOSE 8000
+EXPOSE 10000
 
-ENTRYPOINT ["gunicorn", "--bind=0.0.0.0:8000", "app.predict:app"]
+ENTRYPOINT ["sh", "-c", "exec gunicorn --bind 0.0.0.0:${PORT:-10000} app.predict:app"]
